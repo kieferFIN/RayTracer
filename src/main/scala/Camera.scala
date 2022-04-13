@@ -6,7 +6,7 @@ import scala.collection.parallel.immutable.ParVector
 case class Camera(
                    orig: Vec3,
                    width: Int,
-                   heigh: Int,
+                   height: Int,
                    upperLeft: Vec3,
                    dy: Vec3,
                    dx: Vec3,
@@ -17,8 +17,8 @@ case class Camera(
                    raysPerPixel: Int
                  ):
   def takePic(world: World): BufferedImage =
-    val img = BufferedImage(width, heigh, BufferedImage.TYPE_INT_RGB)
-    val indexes = ParVector.tabulate(width * heigh)(i => (i % width, i / width))
+    val img = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+    val indexes = ParVector.tabulate(width * height)(i => (i % width, i / width))
     indexes.map(i =>
       (i._1, i._2, world.shootRay(Ray.look_at(orig, upperLeft + dx * i._1 + dy * i._2), steps))
     ).foreach(d => img.setRGB(d._1, d._2, d._3.toPixel))
@@ -50,11 +50,11 @@ class CameraBuilder(
     val down = dir.cross(right).normalize
     val w = math.tan(halfAngle) * 2.0
     val h = w * ratio
-    val wVecor = right * w
-    val hVecor = down * h
-    val upperLeft = orig + dir - wVecor * 0.5 - hVecor * 0.5
-    val dx = wVecor / width.toDouble
-    val dy = hVecor / height.toDouble
+    val wVector = right * w
+    val hVector = down * h
+    val upperLeft = orig + dir - wVector * 0.5 - hVector * 0.5
+    val dx = wVector / width.toDouble
+    val dy = hVector / height.toDouble
 
     Camera(orig, width, height, upperLeft, dy, dx, threads, size._1, size._2, raysPerPixel, steps)
   }
