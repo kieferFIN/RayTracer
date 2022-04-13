@@ -7,7 +7,7 @@ import breeze.linalg.{DenseMatrix, DenseVector}
 import scala.collection.mutable.ListBuffer
 
 case class Triangle(color:     Color,
-                    verticies: (Vec3, Vec3, Vec3),
+                    vertices: (Vec3, Vec3, Vec3),
                     normals:   (Vec3, Vec3, Vec3),
                     ab:        Vec3,
                     ac:        Vec3
@@ -15,7 +15,7 @@ case class Triangle(color:     Color,
   def hit(r: Ray): Option[Hit] =
     try
       val m = new DenseMatrix(3, ab.toArray ++ ac.toArray ++ r.dir.toArray, 0)
-      val b = new DenseVector(verticies(0) - r.orig)
+      val b = new DenseVector(vertices(0) - r.orig)
       val x = m \ b
       val beta = x(0)
       val gamma = x(1)
@@ -32,18 +32,18 @@ case class Triangle(color:     Color,
       case e:breeze.linalg.MatrixSingularException => None
 
 class TriangleBuilder(val color: Color):
-  private val verticies = ListBuffer[Vec3]()
+  private val vertices = ListBuffer[Vec3]()
   private val normals = ListBuffer[Vec3]()
 
-  def add(v: Vec3, n: Vec3) =
-    verticies += v
+  def add(v: Vec3, n: Vec3): Unit=
+    vertices += v
     normals += n
 
   def build: Option[Triangle] =
-    if verticies.size != 3 && normals.size != 3 then
+    if vertices.size != 3 && normals.size != 3 then
       None
     else
-      val v = verticies match
+      val v = vertices match
         case ListBuffer(x, y, z) => (x, y, z)
       val n = normals match
         case ListBuffer(x, y, z) => (x, y, z)
